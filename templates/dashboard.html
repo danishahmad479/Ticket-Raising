@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% load static%}
+{% block content%}
+
+
+<div>
+    <h1 class = "heading">User Dashboard</h1>
+
+    <form method="POST" action="{% url 'ticket' %}">
+      {% csrf_token %} 
+      {% if request.user.is_superuser %}
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Ticket Title</th>
+            <th>Ticket Description</th>
+            <th>Ticket Assignedto</th>
+            <th>Ticket Priority</th>
+            <th>Ticket Isapproved</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticket in tickets %}
+          <tr>
+            <td>{{ ticket.title }}</td>
+            <td>{{ ticket.description }}</td>
+            <td>{{ ticket.assignedto }}</td>
+            <td>{{ ticket.priority }}</td>
+            <td>
+              <input type="checkbox" name="is_approved_{{ ticket.id }}" {% if ticket.isapproved %}checked{% endif%}/>
+            </td>
+            <td>
+              <button type="submit" name="approve_button" value="{{ ticket.id }}" class="btn btn-primary">Approve</button>
+              <input type="hidden" name="ticket_id_{{ ticket.id }}" value="{{ ticket.id }}">
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% else %}
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Ticket Title</th>
+            <th>Ticket Description</th>
+            <th>Ticket Assignedto</th>
+            <th>Ticket Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticket in tickets %}
+          <tr>
+            <td>{{ ticket.title }}</td>
+            <td>{{ ticket.description }}</td>
+            <td>{{ ticket.assignedto }}</td>
+            <td>{{ ticket.priority }}</td>
+            <td>
+                <a href="{% url 'update_ticket' ticket.id %}" class="btn btn-primary">Update</a>
+            </td>
+            <td>
+                <a href="{% url 'delete_ticket' ticket.id %}" class="btn btn-danger">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+      {% comment %} <div class="row">
+        {% if not request.user.is_superuser %}
+        <div class="col-md-6">
+          <a href="{% url 'ticket' %}" class="btn btn-primary">Add Ticket</a>
+        </div>
+        {% endif %}
+      </div> {% endcomment %}
+    </form>
+  {% endblock %}
+
+</div>
+
+    {% comment %} <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <body>
+</html> {% endcomment %}
